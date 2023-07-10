@@ -1,3 +1,5 @@
 .env
 chatgpt.log
 venv
+.idea
+data
