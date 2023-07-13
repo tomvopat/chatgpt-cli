@@ -23,9 +23,9 @@ def logging(content, filename):
 
 def print_help():
     help_message = '''Instructions:
-    \help   print help
-    \clear  clear the context
-    \exit   exit the program
+    /help   print help
+    /clear  clear the context
+    /exit   exit the program
     '''
     print(help_message)
 
@@ -48,7 +48,7 @@ parser.add_argument(
     default=0)
 args = parser.parse_args()
 
-print('Welcome to ChatGPT! Type "\help" for help.')
+print('Welcome to ChatGPT! Type "/help" for help.')
 
 file_input = ""
 messages = []
@@ -73,11 +73,11 @@ def read_input(is_new):
         return (1, "EOF")
 
     user_input_trim = user_input.lower().strip()
-    if user_input_trim == '\exit':
+    if user_input_trim == '/exit':
         return (1, "exit")
-    elif user_input_trim == '\clear':
+    elif user_input_trim == '/clear':
         return (2, "clear")
-    elif user_input_trim == '\help':
+    elif user_input_trim == '/help':
         print_help()
         return (3, "help")
     elif user_input_trim == '':
