@@ -2,6 +2,7 @@ import openai
 import readline
 import argparse
 import decouple
+import tiktoken
 
 openai.api_key = decouple.config("OPENAI_KEY")
 default_model = 'gpt-3.5-turbo'
@@ -28,6 +29,38 @@ def print_help():
     /exit   exit the program
     '''
     print(help_message)
+
+def read_input(is_new):
+    prompt = "(new)> "
+    if not is_new:
+        prompt = "(follow)> "
+
+    try:
+        user_input = input(prompt)
+    except EOFError:
+        print()
+        return (1, "EOF")
+
+    user_input_trim = user_input.lower().strip()
+    if user_input_trim == '/exit':
+        return (1, "exit")
+    elif user_input_trim == '/clear':
+        return (2, "clear")
+    elif user_input_trim == '/help':
+        print_help()
+        return (3, "help")
+    elif user_input_trim == '':
+        return (4, "no_input")
+    elif user_input_trim == '/status':
+        return (5, "stats")
+    else:
+        return (0, user_input)
+
+
+def count_tokens(message, model):
+    tokenizer = tiktoken.encoding_for_model(model)
+    encoded_message = tokenizer.encode(message)
+    return len(encoded_message)
 
 
 parser = argparse.ArgumentParser(
@@ -60,38 +93,12 @@ if len(file_input):
     messages.append({'role': 'user', 'content': file_input})
     print("(new)> file input...")
 
-
-def read_input(is_new):
-    prompt = "(new)> "
-    if not is_new:
-        prompt = "(follow)> "
-
-    try:
-        user_input = input(prompt)
-    except EOFError:
-        print()
-        return (1, "EOF")
-
-    user_input_trim = user_input.lower().strip()
-    if user_input_trim == '/exit':
-        return (1, "exit")
-    elif user_input_trim == '/clear':
-        return (2, "clear")
-    elif user_input_trim == '/help':
-        print_help()
-        return (3, "help")
-    elif user_input_trim == '':
-        return (4, "no_input")
-    else:
-        return (0, user_input)
-
-
 while (True):
     empty_messages = (len(messages) == 0)
     if empty_messages or (messages[-1]['role'] != 'user'):
-        (exit_code, new_message) = read_input(empty_messages)
+        (exit_code, exit_message) = read_input(empty_messages)
         if exit_code == 0:
-            messages.append({'role': 'user', 'content': new_message})
+            messages.append({'role': 'user', 'content': exit_message})
         elif exit_code == 1:
             break
         elif exit_code == 2:
@@ -101,8 +108,14 @@ while (True):
             continue
         elif exit_code == 4:
             continue
+        elif exit_code == 5:
+            token_count = 0
+            for m in messages:
+                token_count += count_tokens(m['content'], args.model)
+            print(f"\t{token_count} tokens")
+            continue
         else:
-            print("unknown error")
+            print(f"error: {exit_message}")
             exit()
 
     try:
