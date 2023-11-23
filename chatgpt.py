@@ -26,7 +26,7 @@ def logging(content, filename):
 def print_help():
     help_message = '''Instructions:
     /help   print help
-    /clear  clear the context
+    /new    start new context
     /exit   exit the program
     '''
     print(help_message)
@@ -45,8 +45,8 @@ def read_input(is_new):
     user_input_trim = user_input.lower().strip()
     if user_input_trim == '/exit':
         return (1, "exit")
-    elif user_input_trim == '/clear':
-        return (2, "clear")
+    elif user_input_trim == '/new':
+        return (2, "new")
     elif user_input_trim == '/help':
         print_help()
         return (3, "help")
