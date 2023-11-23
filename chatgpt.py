@@ -5,8 +5,9 @@ import decouple
 import tiktoken
 
 openai.api_key = decouple.config("OPENAI_KEY")
-default_model = 'gpt-3.5-turbo'
 log_file_name = 'chatgpt.log'
+AVAILABLE_MODELS = ['gpt-3.5-turbo', 'gpt-3.5-turbo-16k', 'gpt-4', 'gpt-4-32k'],
+DEFAULT_MODEL = 'gpt-4'
 
 
 def temperature_check(value):
@@ -71,8 +72,8 @@ parser.add_argument(
     help="File with input")
 parser.add_argument(
     '--model',
-    choices=['gpt-3.5-turbo', 'gpt-4'],
-    default=default_model,
+    choices = ['gpt-3.5-turbo', 'gpt-3.5-turbo-16k', 'gpt-4', 'gpt-4-32k'],
+    default=DEFAULT_MODEL,
     help="Which ChatGPT model to use")
 parser.add_argument(
     '--temperature',
