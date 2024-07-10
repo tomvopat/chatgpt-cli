@@ -3,7 +3,8 @@ import readline
 import argparse
 import decouple
 import tiktoken
-from colorama import Fore, Style
+#import colorama
+#from colorama import Fore, Style
 
 openai.api_key = decouple.config("OPENAI_KEY")
 log_file_name = 'chatgpt.log'
@@ -33,9 +34,12 @@ def print_help():
     print(help_message)
 
 def read_input(is_new):
-    prompt = Fore.BLUE + "(new)> " + Style.RESET_ALL
+    # the colors don't work properly - second line overwrites the first one
+    #prompt = bcolors.OKBLUE + "(new)> " + bcolors.ENDC
+    prompt = "(new)> "
     if not is_new:
-        prompt = Fore.BLUE + "(follow)> " + Style.RESET_ALL
+        #prompt = bcolors.OKBLUE + "(follow)> " + bcolors.ENDC
+        prompt = "(follow)> "
 
     try:
         user_input = input(prompt)
