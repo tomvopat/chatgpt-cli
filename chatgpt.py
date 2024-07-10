@@ -7,10 +7,14 @@ import tiktoken
 #from colorama import Fore, Style
 
 openai.api_key = decouple.config("OPENAI_KEY")
-log_file_name = 'chatgpt.log'
-AVAILABLE_MODELS = ['gpt-3.5-turbo', 'gpt-3.5-turbo-16k', 'gpt-4', 'gpt-4-32k'],
-DEFAULT_MODEL = 'gpt-4'
-
+LOG_FILE_NAME = 'chatgpt.log'
+AVAILABLE_MODELS = [
+    'gpt-3.5-turbo',
+    'gpt-4',
+    'gpt-4-turbo',
+    'gpt-4o',
+]
+DEFAULT_MODEL = 'gpt-4o'
 
 def temperature_check(value):
     fvalue = float(value)
@@ -79,7 +83,7 @@ parser.add_argument(
     help="File with input")
 parser.add_argument(
     '--model',
-    choices = ['gpt-3.5-turbo', 'gpt-3.5-turbo-16k', 'gpt-4', 'gpt-4-32k'],
+    choices = AVAILABLE_MODELS,
     default=DEFAULT_MODEL,
     help="Which ChatGPT model to use")
 parser.add_argument(
@@ -155,6 +159,6 @@ while (True):
         print(err)
         exit()
 
-    logging(messages, log_file_name)
+    logging(messages, LOG_FILE_NAME)
 
 print("Bye!")
