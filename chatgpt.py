@@ -59,6 +59,8 @@ def read_input(is_new):
         return (4, "no_input")
     elif user_input_trim == '/status':
         return (5, "stats")
+    elif user_input[0] == '/':
+        return (6, "uknown_command")
     else:
         return (0, user_input)
 
@@ -119,6 +121,9 @@ while (True):
             for m in messages:
                 token_count += count_tokens(m['content'], args.model)
             print(f"\t{token_count} tokens")
+            continue
+        elif exit_code == 6:
+            print(f"error: {exit_message}")
             continue
         else:
             print(f"error: {exit_message}")
