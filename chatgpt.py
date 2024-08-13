@@ -1,6 +1,5 @@
-import openai
-import readline
 import argparse
+import openai
 import decouple
 import tiktoken
 #import colorama
@@ -34,6 +33,7 @@ def print_help():
     /help   print help
     /new    start new context
     /exit   exit the program
+    /tokens count number of used tokens
     '''
     print(help_message)
 
@@ -61,7 +61,7 @@ def read_input(is_new):
         return (3, "help")
     elif user_input_trim == '':
         return (4, "no_input")
-    elif user_input_trim == '/status':
+    elif user_input_trim == '/tokens':
         return (5, "stats")
     elif user_input[0] == '/':
         return (6, "uknown_command")
@@ -70,8 +70,8 @@ def read_input(is_new):
 
 
 def count_tokens(message, model):
-    tokenizer = tiktoken.encoding_for_model(model)
-    encoded_message = tokenizer.encode(message)
+    enc = tiktoken.encoding_for_model(model)
+    encoded_message = enc.encode(message)
     return len(encoded_message)
 
 
@@ -99,7 +99,7 @@ file_input = ""
 messages = []
 
 if args.file:
-    with open(args.file, 'r') as f:
+    with open(args.file, 'r', encoding='utf-8') as f:
         file_input = f.read()
 if len(file_input):
     messages.append({'role': 'user', 'content': file_input})
