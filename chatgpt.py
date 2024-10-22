@@ -2,6 +2,7 @@ import argparse
 import openai
 import decouple
 import tiktoken
+import os
 #import colorama
 #from colorama import Fore, Style
 
@@ -32,6 +33,7 @@ def print_help():
     help_message = '''Instructions:
     /help   print help
     /new    start new context
+    /file <filename> read input from file
     /exit   exit the program
     /tokens count number of used tokens
     '''
@@ -51,20 +53,25 @@ def read_input(is_new):
         print()
         return (1, "EOF")
 
-    user_input_trim = user_input.lower().strip()
-    if user_input_trim == '/exit':
+    user_input_trim = user_input.lower().strip().split()
+    if user_input_trim[0] == '/exit':
         return (1, "exit")
-    elif user_input_trim == '/new':
+    elif user_input_trim[0] == '/new':
         return (2, "new")
-    elif user_input_trim == '/help':
+    elif user_input_trim[0] == '/help':
         print_help()
         return (3, "help")
-    elif user_input_trim == '':
+    elif len(user_input_trim) == 0:
         return (4, "no_input")
-    elif user_input_trim == '/tokens':
+    elif user_input_trim[0] == '/tokens':
         return (5, "stats")
+    elif user_input_trim[0] == '/file':
+        if len(user_input_trim) < 2:
+            return (6, "<no_filename>")
+        else:
+            return (6, user_input_trim[1])
     elif user_input[0] == '/':
-        return (6, "uknown_command")
+        return (99, "uknown_command")
     else:
         return (0, user_input)
 
@@ -93,17 +100,19 @@ parser.add_argument(
     default=0)
 args = parser.parse_args()
 
+def read_file(filename):
+    if not os.path.isfile(filename):
+        print(f"File {filename} not found")
+        return ""
+
+    content = ""
+    with open(filename, 'r', encoding='utf-8') as f:
+        content = f.read()
+    return content
+
 print('Welcome to ChatGPT! Type "/help" for help.')
 
-file_input = ""
 messages = []
-
-if args.file:
-    with open(args.file, 'r', encoding='utf-8') as f:
-        file_input = f.read()
-if len(file_input):
-    messages.append({'role': 'user', 'content': file_input})
-    print("(new)> file input...")
 
 while (True):
     empty_messages = (len(messages) == 0)
@@ -127,6 +136,12 @@ while (True):
             print(f"\t{token_count} tokens")
             continue
         elif exit_code == 6:
+            print("\treading input from file...")
+            file_input = read_file(exit_message)
+            if file_input == "":
+                continue
+            messages.append({'role': 'user', 'content': file_input})
+        elif exit_code == 99:
             print(f"error: {exit_message}")
             continue
         else:
